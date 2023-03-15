@@ -1,15 +1,18 @@
 import * as path from 'https://deno.land/std@0.165.0/path/mod.ts';
+import { Component } from 'https://deno.land/x/tui@1.3.4/src/component.ts';
 
 import { Cwd, FrankOptions } from './types.ts';
 
 class FrankManager {
-	#cwd: Cwd | null;
+	#cwd: Cwd | null = null;
 	#options: FrankOptions;
 	#consoleSize: {
-		columns: number;
-		rows: number;
+		fullWidth: number;
+		halfWidth: number;
+		fullHeight: number;
+		oneThirdHeight: number;
 	};
-	#halfWidth: number;
+	#selectedComponent: Component | null = null;
 
 	constructor() {
 		this.#options = JSON.parse(
@@ -19,10 +22,13 @@ class FrankManager {
 			)
 		) as FrankOptions;
 
-		this.#cwd = null;
-
-		this.#consoleSize = Deno.consoleSize();
-		this.#halfWidth = this.#consoleSize.columns * 0.5;
+		const dcs = Deno.consoleSize();
+		this.#consoleSize = {
+			fullWidth: dcs.columns,
+			halfWidth: dcs.columns * 0.5,
+			fullHeight: dcs.rows,
+			oneThirdHeight: dcs.rows * 0.33,
+		};
 	}
 
 	public get commands() {
@@ -33,6 +39,10 @@ class FrankManager {
 		return this.#options.dirs;
 	}
 
+	public get consoleSize() {
+		return this.#consoleSize;
+	}
+
 	public setCwd(cwd: number): void {
 		this.#cwd = cwd === 0 ? null : this.dirs[cwd - 1];
 	}
@@ -41,13 +51,22 @@ class FrankManager {
 		return this.#cwd?.dir || null;
 	}
 
+	public focusComponent(component: Component) {
+		if (this.#selectedComponent) {
+			this.#selectedComponent.state = 'base';
+		}
+
+		this.#selectedComponent = component;
+		this.#selectedComponent.state = 'focused';
+	}
+
 	public get dirsTableData() {
 		return [
 			['~ none ~'],
 			...this.dirs.map((item) => [
 				item.name
-					? item.name.substring(0, this.#halfWidth - 5)
-					: item.dir.length > this.#halfWidth - 5
+					? item.name.substring(0, this.consoleSize.halfWidth - 5)
+					: item.dir.length > this.consoleSize.halfWidth - 5
 					? item.dir
 							.split('/')
 							.map((x) => x.charAt(0))

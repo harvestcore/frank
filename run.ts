@@ -35,17 +35,10 @@ const tui = new Tui({
 	}),
 });
 
-const consoleSize = Deno.consoleSize();
-const canvas = {
-	fullWidth: consoleSize.columns,
-	halfWidth: consoleSize.columns * 0.5,
-	fullHeight: consoleSize.rows,
-	oneThirdHeight: consoleSize.rows * 0.33,
-};
-
+const consoleSize = frankManager.consoleSize;
 const tableTheme = {
 	base: crayon.bgBlack.white,
-	header: { base: crayon.bgBlack.lightBlue },
+	header: { base: crayon.bgBlack.white },
 	focused: crayon.bgBlack.white.bold,
 	selectedRow: {
 		base: crayon.bgWhite.black,
@@ -59,10 +52,10 @@ const commandsTable = new TableComponent({
 	theme: tableTheme,
 	rectangle: {
 		column: 0,
-		height: canvas.oneThirdHeight,
+		height: consoleSize.oneThirdHeight,
 		row: 0,
 	},
-	headers: [pad('Commands', canvas.halfWidth - 2)],
+	headers: [pad('Commands', consoleSize.halfWidth - 2)],
 	data: frankManager.commands.map((item) => [item.name || item.cmd]),
 	framePieces: 'rounded',
 });
@@ -71,30 +64,25 @@ const dirsTable = new TableComponent({
 	tui,
 	theme: tableTheme,
 	rectangle: {
-		column: canvas.halfWidth,
-		height: canvas.oneThirdHeight,
+		column: consoleSize.halfWidth,
+		height: consoleSize.oneThirdHeight,
 		row: 0,
 	},
-	headers: [pad('Directories', canvas.halfWidth - 2)],
+	headers: [pad('Directories', consoleSize.halfWidth - 2)],
 	data: frankManager.dirsTableData,
 	framePieces: 'rounded',
 });
 
 const outputTextBox = new TextboxComponent({
 	tui,
-	theme: {
-		...baseTheme,
-		highlightedLine: {
-			base: crayon.bgWhite.black,
-		},
-	},
+	theme: baseTheme,
 	multiline: true,
 	hidden: false,
 	rectangle: {
 		column: 1,
-		row: canvas.oneThirdHeight + 5,
-		height: canvas.oneThirdHeight * 2 - 5,
-		width: canvas.fullWidth - 3,
+		row: consoleSize.oneThirdHeight + 5,
+		height: consoleSize.oneThirdHeight * 2 - 5,
+		width: consoleSize.fullWidth - 3,
 	},
 	value: '',
 });
@@ -111,19 +99,14 @@ new FrameComponent({
 
 const cmdTextBox = new TextboxComponent({
 	tui,
-	theme: {
-		...baseTheme,
-		highlightedLine: {
-			base: crayon.bgWhite.black,
-		},
-	},
+	theme: baseTheme,
 	multiline: true,
 	hidden: false,
 	rectangle: {
 		column: 1,
-		row: canvas.oneThirdHeight + 1,
+		row: consoleSize.oneThirdHeight + 1,
 		height: 2,
-		width: canvas.fullWidth - 3,
+		width: consoleSize.fullWidth - 3,
 	},
 	value: 'Command: -\nPath: -',
 });
@@ -177,11 +160,9 @@ dirsTable.on('keyPress', async (ev) => {
 tui.on('keyPress', (ev) => {
 	if (ev.key === 'tab') {
 		if (dirsTable.state === 'focused') {
-			commandsTable.state = 'focused';
-			dirsTable.state = 'base';
+			frankManager.focusComponent(commandsTable);
 		} else {
-			dirsTable.state = 'focused';
-			commandsTable.state = 'base';
+			frankManager.focusComponent(dirsTable);
 		}
 	}
 });
@@ -193,8 +174,8 @@ tui.dispatch();
 handleKeypresses(tui);
 handleKeyboardControls(tui);
 
+// Set the commands table focused by default.
+frankManager.focusComponent(commandsTable);
+
 // RUN.
 tui.run();
-
-// Default state for the commands table.
-commandsTable.state = 'focused';
