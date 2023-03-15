@@ -1,0 +1,24 @@
+{
+	"commands": [
+		{
+			"cmd": "ls"
+		},
+		{
+			"cmd": "pwd"
+		},
+		{
+			"name": "ls temp folder",
+			"cmd": "ls",
+			"dir": "/tmp"
+		}
+	],
+	"dirs": [
+		{
+			"name": "root",
+			"dir": "/"
+		},
+		{
+			"dir": "/var/lib"
+		}
+	]
+}

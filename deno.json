@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"lib": ["deno.ns"]
 	},
-	"importMap": "./imports.json",
 	"tasks": {
 		"test": "deno test --allow-all",
 		"test:coverage": "TMP=$(mktemp -d) && deno task test --coverage=$TMP && deno coverage $TMP --lcov > $TMP/lcov.lcov && genhtml -o coverage $TMP/lcov.lcov"
