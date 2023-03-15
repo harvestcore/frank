@@ -18,6 +18,8 @@ deno install -A -f --name frank run.ts
 
 ## How to use
 
+> See a frank.json sample [here](./frank.sample.json).
+
 1. Define the commands you want to execute. Each command is defined by:
     - `cmd` The command itself.
     - `name` A friendly name. Optional.
