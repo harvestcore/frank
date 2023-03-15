@@ -28,7 +28,7 @@ deno install -A -f --name frank run.ts
     - `dir` The directory itself. An absolute path.
     - `name` A friendly name. Optional.
 3. Install and execute `frank`.
-4. The `Commands` section is focused by default, you can navigate it with the arrow keys. To swith to the `Directories` section press `tab`.
+4. The `Commands` section is focused by default, you can navigate it with the arrow keys. To switch to the `Directories` section press `tab`.
 5. Run a command pressing the `space` or `return` keys. The selected command will be executed with the selected directory.
     - If `none` is the directory selected, then the command will be executed in the configured directory, or in the current working directory if not configured in the command.
     - If any other directory is selected, then that directory will be used to execute the command.
