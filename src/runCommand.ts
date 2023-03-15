@@ -1,9 +1,13 @@
-import { decode } from './decode.ts';
 import frankManager from './frankManager.ts';
-import { Command } from './types.ts';
+import { type Command } from './types.ts';
+import { decode } from './decode.ts';
 
-export async function runCommand(command: Command): Promise<string> {
-	let outputMsg = '';
+export async function runCommand(command: Command): Promise<{
+	msg: string;
+	code: number | string;
+	time: number;
+}> {
+	frankManager.busy = true;
 	try {
 		const p = Deno.run({
 			cmd: command.cmd.split(' '),
@@ -20,16 +24,20 @@ export async function runCommand(command: Command): Promise<string> {
 		]);
 		const after = Date.now();
 
-		if (status.success) {
-			outputMsg = `Done in ${(after - before) / 1000}s.\n\n${decode(
-				rawOutput
-			)}`;
-		} else {
-			outputMsg = `An error occured. See:\n\n${decode(rawErrorOutput)}`;
-		}
+		frankManager.busy = false;
+		return {
+			msg: status.success
+				? decode(rawOutput)
+				: `An error occured.\n\n${decode(rawErrorOutput)}`,
+			code: status.code,
+			time: (after - before) / 1000,
+		};
 	} catch (e: unknown) {
-		outputMsg = `An error occured. See:\n\n${(e as Error).message}`;
+		frankManager.busy = false;
+		return {
+			msg: `An error occured. \n\n${(e as Error).message}`,
+			code: 'see below',
+			time: 0,
+		};
 	}
-
-	return outputMsg;
 }

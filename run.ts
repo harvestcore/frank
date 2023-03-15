@@ -106,7 +106,7 @@ const cmdTextBox = new TextboxComponent({
 		column: 1,
 		row: consoleSize.oneThirdHeight + 1,
 		height: 2,
-		width: consoleSize.fullWidth - 3,
+		width: consoleSize.oneSixthWidth * 5 - 4,
 	},
 	value: 'Command: -\nPath: -',
 });
@@ -121,6 +121,30 @@ new FrameComponent({
 	},
 });
 
+const statusTextBox = new TextboxComponent({
+	tui,
+	theme: baseTheme,
+	multiline: true,
+	hidden: false,
+	rectangle: {
+		column: consoleSize.oneSixthWidth * 5,
+		row: consoleSize.oneThirdHeight + 1,
+		height: 2,
+		width: consoleSize.oneSixthWidth - 2,
+	},
+	value: 'Code: -\nTime: -',
+});
+
+new FrameComponent({
+	tui,
+	component: statusTextBox,
+	framePieces: 'rounded',
+	theme: {
+		base: tuiStyle,
+		focused: tuiStyle,
+	},
+});
+
 function updateInfoCommand(command: Command) {
 	const path = frankManager.cwd || command.dir || Deno.cwd();
 	cmdTextBox.value = `Command: ${command.cmd}\nPath: ${path}`;
@@ -128,10 +152,16 @@ function updateInfoCommand(command: Command) {
 
 async function handleExecution(ev: KeyPress) {
 	if (['space', 'return'].includes(ev.key)) {
+		// Avoid running multiple commands at the same time.
+		if (frankManager.busy) {
+			return;
+		}
+
 		const command = frankManager.commands[commandsTable.selectedRow];
 		outputTextBox.value = 'Running...';
-		const msg = await runCommand(command);
+		const { msg, code, time } = await runCommand(command);
 		outputTextBox.value = msg;
+		statusTextBox.value = `Code: ${code}\nTime: ${time}s`;
 	}
 }
 
