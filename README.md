@@ -6,9 +6,9 @@ A very simple app to run console commands.
 
 1. Create a `frank.json` file:
 
--   Somewhere in your filesystem.
-    -   Then, store its absolute path in the `FRANK_FILE` environment variable.
--   In the folder where you're going to use `frank`.
+    - a) Somewhere in your filesystem.
+        - Then, store its absolute path in the `FRANK_FILE` environment variable.
+    - b) In the folder where you're going to use `frank`.
 
 2. Run the following command:
 
