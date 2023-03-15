@@ -47,10 +47,12 @@ class FrankManager {
 			...this.dirs.map((item) => [
 				item.name
 					? item.name.substring(0, this.#halfWidth - 5)
-					: item.dir
+					: item.dir.length > this.#halfWidth - 5
+					? item.dir
 							.split('/')
 							.map((x) => x.charAt(0))
-							.join('/'),
+							.join('/')
+					: item.dir,
 			]),
 		];
 	}
