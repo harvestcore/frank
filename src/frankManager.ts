@@ -1,5 +1,6 @@
 import * as path from 'https://deno.land/std@0.165.0/path/mod.ts';
 import { Component } from 'https://deno.land/x/tui@1.3.4/src/component.ts';
+import { pad } from './pad.ts';
 
 import { type Cwd, type FrankOptions } from './types.ts';
 
@@ -42,8 +43,8 @@ class FrankManager {
 		return this.#busy;
 	}
 
-	public get commands() {
-		return this.#options.commands;
+	public getCommand(id: number) {
+		return this.#options.commands[id];
 	}
 
 	public get dirs() {
@@ -55,7 +56,7 @@ class FrankManager {
 	}
 
 	public setCwd(cwd: number): void {
-		this.#cwd = cwd === 0 ? null : this.dirs[cwd - 1];
+		this.#cwd = cwd === 0 ? null : this.#options.dirs[cwd - 1];
 	}
 
 	public get cwd(): string | null {
@@ -74,7 +75,7 @@ class FrankManager {
 	public get dirsTableData() {
 		return [
 			['~ none ~'],
-			...this.dirs.map((item) => [
+			...this.#options.dirs.map((item) => [
 				item.name
 					? item.name.substring(0, this.consoleSize.halfWidth - 5)
 					: item.dir.length > this.consoleSize.halfWidth - 5
@@ -85,6 +86,15 @@ class FrankManager {
 					: item.dir,
 			]),
 		];
+	}
+
+	public get commandsTableData() {
+		return this.#options.commands.map((item) => {
+			if (item.type === 'separator') {
+				return ['━'.repeat(this.#consoleSize.halfWidth - 3)];
+			}
+			return [item.name || item.cmd];
+		});
 	}
 }
 

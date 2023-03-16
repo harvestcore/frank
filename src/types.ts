@@ -2,6 +2,7 @@ export type Command = {
 	name?: string;
 	cmd: string;
 	dir?: string;
+	type?: 'separator';
 };
 
 export type Cwd = {

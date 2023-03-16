@@ -56,7 +56,7 @@ const commandsTable = new TableComponent({
 		row: 0,
 	},
 	headers: [pad('Commands', consoleSize.halfWidth - 2)],
-	data: frankManager.commands.map((item) => [item.name || item.cmd]),
+	data: frankManager.commandsTableData,
 	framePieces: 'rounded',
 });
 
@@ -147,7 +147,9 @@ new FrameComponent({
 
 function updateInfoCommand(command: Command) {
 	const path = frankManager.cwd || command.dir || Deno.cwd();
-	cmdTextBox.value = `Command: ${command.cmd}\nPath: ${path}`;
+	cmdTextBox.value = `Command: ${
+		!command.type ? command.cmd : '-'
+	}\nPath: ${path}`;
 }
 
 async function handleExecution(ev: KeyPress) {
@@ -157,11 +159,13 @@ async function handleExecution(ev: KeyPress) {
 			return;
 		}
 
-		const command = frankManager.commands[commandsTable.selectedRow];
-		outputTextBox.value = 'Running...';
-		const { msg, code, time } = await runCommand(command);
-		outputTextBox.value = msg;
-		statusTextBox.value = `Code: ${code}\nTime: ${time}s`;
+		const command = frankManager.getCommand(commandsTable.selectedRow);
+		if (command.type !== 'separator') {
+			outputTextBox.value = 'Running...';
+			const { msg, code, time } = await runCommand(command);
+			outputTextBox.value = msg;
+			statusTextBox.value = `Code: ${code}\nTime: ${time}s`;
+		}
 	}
 }
 
@@ -171,7 +175,7 @@ commandsTable.on('keyPress', async (ev) => {
 
 	// Specific up-down behavior.
 	if (['up', 'down'].includes(ev.key)) {
-		updateInfoCommand(frankManager.commands[commandsTable.selectedRow]);
+		updateInfoCommand(frankManager.getCommand(commandsTable.selectedRow));
 	}
 });
 
@@ -182,7 +186,7 @@ dirsTable.on('keyPress', async (ev) => {
 	// Specific up-down behavior.
 	if (['up', 'down'].includes(ev.key)) {
 		frankManager.setCwd(dirsTable.selectedRow);
-		updateInfoCommand(frankManager.commands[commandsTable.selectedRow]);
+		updateInfoCommand(frankManager.getCommand(commandsTable.selectedRow));
 	}
 });
 
