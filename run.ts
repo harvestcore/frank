@@ -81,7 +81,7 @@ const outputTextBox = new TextboxComponent({
 	rectangle: {
 		column: 1,
 		row: consoleSize.oneThirdHeight + 5,
-		height: consoleSize.oneThirdHeight * 2 - 5,
+		height: consoleSize.oneThirdHeight * 2 - 7,
 		width: consoleSize.fullWidth - 3,
 	},
 	value: '',

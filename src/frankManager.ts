@@ -1,6 +1,5 @@
 import * as path from 'https://deno.land/std@0.165.0/path/mod.ts';
 import { Component } from 'https://deno.land/x/tui@1.3.4/src/component.ts';
-import { pad } from './pad.ts';
 
 import { type Cwd, type FrankOptions } from './types.ts';
 
@@ -29,9 +28,9 @@ class FrankManager {
 		this.#consoleSize = {
 			fullWidth: dcs.columns,
 			halfWidth: Math.round(dcs.columns * 0.5),
-			oneSixthWidth: Math.round(dcs.columns * 0.166),
+			oneSixthWidth: Math.round(dcs.columns * (1 / 6)),
 			fullHeight: dcs.rows,
-			oneThirdHeight: Math.round(dcs.rows * 0.33),
+			oneThirdHeight: Math.round(dcs.rows * (1 / 3)),
 		};
 	}
 
